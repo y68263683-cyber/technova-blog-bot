@@ -1,0 +1,32 @@
+
+name: WORLD PULSE FTP Deploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: FTP_SERVER
+
+    steps:
+      - name: Get project files
+        uses: actions/checkout@v4
+
+      - name: Prepare website
+        run: |
+          mkdir -p deploy/assets
+          cp index.php deploy/
+          cp style.css deploy/assets/style.css
+          cp llms.txt deploy/
+
+      - name: Upload to InfinityFree
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          port: 21
+          server-dir: /htdocs/
+          local-dir: ./deploy/
